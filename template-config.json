@@ -69,6 +69,11 @@
           "description": "Single shared login guarded by PASSWORD",
           "isOptional": false
         },
+        "SESSION_COOKIE_SECURE": {
+          "defaultValue": "true",
+          "description": "Secure session cookie - correct behind Railway's HTTPS edge, leave true",
+          "isOptional": false
+        },
         "SECRET_KEY": {
           "defaultValue": "${{secret(32)}}",
           "description": "Auto-generated - signs dashboard sessions",

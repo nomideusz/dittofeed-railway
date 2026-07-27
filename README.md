@@ -43,7 +43,8 @@ After deploy:
 
 Notes:
 
-- `BOOTSTRAP=true` re-checks the workspace on every boot; it's idempotent. You can set it to `false` after the first successful deploy for slightly faster restarts.
+- `BOOTSTRAP=true` re-checks the workspace on every boot; it's idempotent. You can set it to `false` after the first successful deploy for slightly faster restarts (the login page reminds you).
+- `SESSION_COOKIE_SECURE=true` is set by default — correct behind Railway's HTTPS edge. Set it to `false` only if you ever serve Dittofeed over plain HTTP.
 - ClickHouse is the memory-hungry piece — give it ~2 GB for comfortable segment computation.
 - The dashboard's API base is derived from the Railway domain automatically; set `DASHBOARD_API_BASE` yourself if you attach a custom domain.
 
