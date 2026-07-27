@@ -159,6 +159,9 @@ spec:
                 AUTH_MODE:
                     default: single-tenant
                     expose: false
+                SESSION_COOKIE_SECURE:
+                    default: "true"
+                    expose: false
                 SECRET_KEY:
                     default: ${PASSWORD}
                     expose: false
