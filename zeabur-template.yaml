@@ -1,0 +1,179 @@
+# yaml-language-server: $schema=https://schema.zeabur.app/template.json
+apiVersion: zeabur.com/v1
+kind: Template
+metadata:
+    name: Dittofeed
+spec:
+    description: Customer engagement journeys — self-hosted Customer.io/Braze alternative.
+    icon: https://raw.githubusercontent.com/dittofeed/dittofeed/main/packages/dashboard/public/favicon-32x32.png
+    tags:
+        - Marketing
+        - Email
+        - Automation
+        - Analytics
+        - Open Source
+    readme: |-
+        # Dittofeed
+
+        [Dittofeed](https://dittofeed.com/) is an open-source customer engagement platform — segment-driven automated journeys, templated messaging, and your user events kept in your own infrastructure.
+
+        ## After deployment
+
+        1. Open the dittofeed service domain and sign in with the generated password.
+        2. Connect an email provider in Settings → Message Channels.
+        3. Send events with a write key, build a segment + template + journey, activate.
+
+        Template source: [nomideusz/dittofeed-railway](https://github.com/nomideusz/dittofeed-railway)
+    variables:
+        - key: PUBLIC_DOMAIN
+          type: DOMAIN
+          name: Public Domain
+          description: The domain of your Dittofeed dashboard
+    services:
+        - name: postgres
+          icon: https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/postgresql.svg
+          template: PREBUILT
+          spec:
+            source:
+                image: postgres:15
+            ports:
+                - id: database
+                  port: 5432
+                  type: TCP
+            volumes:
+                - id: data
+                  dir: /var/lib/postgresql/data
+            env:
+                POSTGRES_DB:
+                    default: dittofeed
+                    expose: true
+                POSTGRES_USER:
+                    default: postgres
+                    expose: true
+                POSTGRES_PASSWORD:
+                    default: ${PASSWORD}
+                    expose: true
+                POSTGRES_HOST:
+                    default: ${CONTAINER_HOSTNAME}
+                    expose: true
+        - name: clickhouse
+          icon: https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/clickhouse.svg
+          template: PREBUILT
+          spec:
+            source:
+                image: clickhouse/clickhouse-server:24.12.6.70-alpine
+            ports:
+                - id: http
+                  port: 8123
+                  type: TCP
+            volumes:
+                - id: data
+                  dir: /var/lib/clickhouse
+            env:
+                CLICKHOUSE_USER:
+                    default: dittofeed
+                    expose: true
+                CLICKHOUSE_PASSWORD:
+                    default: ${PASSWORD}
+                    expose: true
+                CLICKHOUSE_HOSTNAME:
+                    default: ${CONTAINER_HOSTNAME}
+                    expose: true
+        - name: temporal
+          icon: https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/temporal.svg
+          template: PREBUILT
+          dependencies:
+            - postgres
+          spec:
+            source:
+                image: ghcr.io/nomideusz/dittofeed-temporal:latest
+            ports:
+                - id: grpc
+                  port: 7233
+                  type: TCP
+            env:
+                DB:
+                    default: postgresql
+                    expose: false
+                DB_PORT:
+                    default: "5432"
+                    expose: false
+                POSTGRES_USER:
+                    default: ${POSTGRES_USER}
+                    expose: false
+                POSTGRES_PWD:
+                    default: ${POSTGRES_PASSWORD}
+                    expose: false
+                POSTGRES_SEEDS:
+                    default: ${POSTGRES_HOST}
+                    expose: false
+                TEMPORAL_HOSTNAME:
+                    default: ${CONTAINER_HOSTNAME}
+                    expose: true
+        - name: dittofeed
+          icon: https://raw.githubusercontent.com/dittofeed/dittofeed/main/packages/dashboard/public/favicon-32x32.png
+          template: PREBUILT
+          domainKey: PUBLIC_DOMAIN
+          dependencies:
+            - postgres
+            - clickhouse
+            - temporal
+          spec:
+            source:
+                image: ghcr.io/nomideusz/dittofeed-railway:latest
+            ports:
+                - id: web
+                  port: 3000
+                  type: HTTP
+            env:
+                NODE_ENV:
+                    default: production
+                    expose: false
+                PORT:
+                    default: "3000"
+                    expose: false
+                DATABASE_HOST:
+                    default: ${POSTGRES_HOST}
+                    expose: false
+                DATABASE_PORT:
+                    default: "5432"
+                    expose: false
+                DATABASE_USER:
+                    default: ${POSTGRES_USER}
+                    expose: false
+                DATABASE_PASSWORD:
+                    default: ${POSTGRES_PASSWORD}
+                    expose: false
+                CLICKHOUSE_HOST:
+                    default: http://${CLICKHOUSE_HOSTNAME}:8123
+                    expose: false
+                CLICKHOUSE_USER:
+                    default: ${CLICKHOUSE_USER}
+                    expose: false
+                CLICKHOUSE_PASSWORD:
+                    default: ${CLICKHOUSE_PASSWORD}
+                    expose: false
+                TEMPORAL_ADDRESS:
+                    default: ${TEMPORAL_HOSTNAME}:7233
+                    expose: false
+                AUTH_MODE:
+                    default: single-tenant
+                    expose: false
+                SECRET_KEY:
+                    default: ${PASSWORD}
+                    expose: false
+                PASSWORD:
+                    default: ${PASSWORD}
+                    expose: false
+                BOOTSTRAP:
+                    default: "true"
+                    expose: false
+                WORKSPACE_NAME:
+                    default: Default
+                    expose: false
+                DASHBOARD_API_BASE:
+                    default: https://${ZEABUR_WEB_DOMAIN}
+                    expose: false
+            instructions:
+                - title: Sign in with the generated password
+                  content: https://${ZEABUR_WEB_DOMAIN}
