@@ -1,0 +1,231 @@
+{
+  "buckets": {},
+  "services": {
+    "d17700ed-0001-4000-8000-000000000001": {
+      "icon": "https://github.com/dittofeed.png",
+      "name": "dittofeed",
+      "build": {
+        "dockerfilePath": "Dockerfile"
+      },
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "rootDirectory": "/lite"
+      },
+      "variables": {
+        "NODE_ENV": {
+          "defaultValue": "production",
+          "description": "Leave as production",
+          "isOptional": false
+        },
+        "DATABASE_HOST": {
+          "defaultValue": "${{postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        },
+        "DATABASE_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "DATABASE_USER": {
+          "defaultValue": "${{postgres.POSTGRES_USER}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        },
+        "DATABASE_PASSWORD": {
+          "defaultValue": "${{postgres.POSTGRES_PASSWORD}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        },
+        "CLICKHOUSE_HOST": {
+          "defaultValue": "http://${{clickhouse.RAILWAY_PRIVATE_DOMAIN}}:8123",
+          "description": "Wired to the bundled ClickHouse - leave as is",
+          "isOptional": false
+        },
+        "CLICKHOUSE_USER": {
+          "defaultValue": "${{clickhouse.CLICKHOUSE_USER}}",
+          "description": "Wired to the bundled ClickHouse - leave as is",
+          "isOptional": false
+        },
+        "CLICKHOUSE_PASSWORD": {
+          "defaultValue": "${{clickhouse.CLICKHOUSE_PASSWORD}}",
+          "description": "Wired to the bundled ClickHouse - leave as is",
+          "isOptional": false
+        },
+        "TEMPORAL_ADDRESS": {
+          "defaultValue": "${{temporal.RAILWAY_PRIVATE_DOMAIN}}:7233",
+          "description": "Wired to the bundled Temporal - leave as is",
+          "isOptional": false
+        },
+        "AUTH_MODE": {
+          "defaultValue": "single-tenant",
+          "description": "Single shared login guarded by PASSWORD",
+          "isOptional": false
+        },
+        "SECRET_KEY": {
+          "defaultValue": "${{secret(32)}}",
+          "description": "Auto-generated - signs dashboard sessions",
+          "isOptional": false
+        },
+        "PASSWORD": {
+          "defaultValue": "${{secret(16)}}",
+          "description": "Auto-generated - your dashboard login password",
+          "isOptional": false
+        },
+        "BOOTSTRAP": {
+          "defaultValue": "true",
+          "description": "Creates the workspace on first boot (idempotent) - set false later for faster restarts",
+          "isOptional": false
+        },
+        "WORKSPACE_NAME": {
+          "defaultValue": "Default",
+          "description": "Name of your Dittofeed workspace",
+          "isOptional": false
+        },
+        "DASHBOARD_API_BASE": {
+          "defaultValue": "",
+          "description": "Leave empty - derived from your Railway domain automatically",
+          "isOptional": true
+        }
+      },
+      "networking": {
+        "serviceDomains": {
+          "<hasDomain>": {}
+        }
+      },
+      "volumeMounts": {}
+    },
+    "d17700ed-0002-4000-8000-000000000002": {
+      "icon": "https://raw.githubusercontent.com/zeabur/service-icons/main/marketplace/postgresql.svg",
+      "name": "postgres",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "ghcr.io/railwayapp-templates/postgres-ssl:16"
+      },
+      "variables": {
+        "POSTGRES_DB": {
+          "defaultValue": "dittofeed",
+          "description": "App database (Temporal creates its own alongside)",
+          "isOptional": false
+        },
+        "POSTGRES_USER": {
+          "defaultValue": "postgres",
+          "description": "Superuser - Dittofeed bootstrap and Temporal auto-setup need it",
+          "isOptional": false
+        },
+        "POSTGRES_PASSWORD": {
+          "defaultValue": "${{secret(32)}}",
+          "description": "Auto-generated database password",
+          "isOptional": false
+        },
+        "PGDATA": {
+          "defaultValue": "/var/lib/postgresql/data/pgdata",
+          "description": "Data subdirectory - keeps Postgres happy on Railway volumes",
+          "isOptional": false
+        }
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "d17700ed-0002-4000-8000-000000000002": {
+          "mountPath": "/var/lib/postgresql/data"
+        }
+      }
+    },
+    "d17700ed-0003-4000-8000-000000000003": {
+      "icon": "https://github.com/ClickHouse.png",
+      "name": "clickhouse",
+      "build": {},
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "image": "clickhouse/clickhouse-server:24.12.6.70-alpine"
+      },
+      "variables": {
+        "CLICKHOUSE_USER": {
+          "defaultValue": "dittofeed",
+          "description": "ClickHouse application user",
+          "isOptional": false
+        },
+        "CLICKHOUSE_PASSWORD": {
+          "defaultValue": "${{secret(24)}}",
+          "description": "Auto-generated ClickHouse password",
+          "isOptional": false
+        }
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {
+        "d17700ed-0003-4000-8000-000000000003": {
+          "mountPath": "/var/lib/clickhouse"
+        }
+      }
+    },
+    "d17700ed-0004-4000-8000-000000000004": {
+      "icon": "https://github.com/temporalio.png",
+      "name": "temporal",
+      "build": {
+        "dockerfilePath": "Dockerfile"
+      },
+      "deploy": {
+        "startCommand": null,
+        "healthcheckPath": null,
+        "restartPolicyType": "ON_FAILURE",
+        "restartPolicyMaxRetries": 10
+      },
+      "source": {
+        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "rootDirectory": "/temporal"
+      },
+      "variables": {
+        "DB": {
+          "defaultValue": "postgresql",
+          "description": "Temporal persistence driver - leave as is",
+          "isOptional": false
+        },
+        "DB_PORT": {
+          "defaultValue": "5432",
+          "description": "Postgres port",
+          "isOptional": false
+        },
+        "POSTGRES_USER": {
+          "defaultValue": "${{postgres.POSTGRES_USER}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        },
+        "POSTGRES_PWD": {
+          "defaultValue": "${{postgres.POSTGRES_PASSWORD}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        },
+        "POSTGRES_SEEDS": {
+          "defaultValue": "${{postgres.RAILWAY_PRIVATE_DOMAIN}}",
+          "description": "Wired to the bundled Postgres - leave as is",
+          "isOptional": false
+        }
+      },
+      "networking": {
+        "serviceDomains": {}
+      },
+      "volumeMounts": {}
+    }
+  }
+}

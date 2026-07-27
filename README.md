@@ -1,6 +1,6 @@
 # Deploy and Host Dittofeed on Railway
 
-[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/dittofeed?utm_medium=integration&utm_source=button&utm_campaign=dittofeed)
+[![Deploy on Railway](https://railway.com/button.svg)](https://railway.com/new/template/dittofeed-2?utm_medium=integration&utm_source=button&utm_campaign=dittofeed)
 
 [Dittofeed](https://dittofeed.com/) is an open-source customer engagement platform — a self-hosted alternative to Customer.io, Braze, and OneSignal. Build segment-driven automated journeys with a visual editor, send templated messages over email, SMS, and webhooks, and keep every user event in your own infrastructure.
 
