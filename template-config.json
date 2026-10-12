@@ -149,6 +149,47 @@
         "d17700ed-0002-4000-8000-000000000002": {
           "mountPath": "/var/lib/postgresql/data"
         }
+      },
+      "haTemplateCode": "postgres-ha",
+      "haConversionConfig": {
+        "edge": {
+          "label": "Reverse Proxy",
+          "options": [
+            2,
+            3,
+            4,
+            5
+          ],
+          "nodeLabel": "HAProxy",
+          "description": "Routes traffic to the primary",
+          "defaultValue": 3
+        },
+        "replica": {
+          "label": "Replicas",
+          "options": [
+            2,
+            3,
+            4,
+            5,
+            6,
+            7
+          ],
+          "nodeLabel": "Postgres",
+          "description": "Streaming replicas for automatic failover",
+          "defaultValue": 2
+        },
+        "internal": {
+          "label": "Coordinator Nodes",
+          "options": [
+            3,
+            5,
+            7,
+            9
+          ],
+          "nodeLabel": "etcd",
+          "defaultValue": 3
+        },
+        "description": "This will convert your Postgres database to an HA cluster with Patroni failover and etcd consensus."
       }
     },
     "d17700ed-0003-4000-8000-000000000003": {
@@ -173,6 +214,11 @@
         "CLICKHOUSE_PASSWORD": {
           "defaultValue": "${{secret(24)}}",
           "description": "Auto-generated ClickHouse password",
+          "isOptional": false
+        },
+        "MALLOC_CONF": {
+          "defaultValue": "thp:never",
+          "description": "Keeps jemalloc off transparent huge pages; without it idle ClickHouse memory creeps up on Railway",
           "isOptional": false
         }
       },
