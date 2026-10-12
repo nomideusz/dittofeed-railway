@@ -195,7 +195,9 @@
     "d17700ed-0003-4000-8000-000000000003": {
       "icon": "https://github.com/ClickHouse.png",
       "name": "clickhouse",
-      "build": {},
+      "build": {
+        "dockerfilePath": "Dockerfile"
+      },
       "deploy": {
         "startCommand": null,
         "healthcheckPath": null,
@@ -203,7 +205,8 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "image": "clickhouse/clickhouse-server:24.12.6.70-alpine"
+        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "rootDirectory": "/clickhouse"
       },
       "variables": {
         "CLICKHOUSE_USER": {
