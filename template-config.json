@@ -75,7 +75,7 @@
           "isOptional": false
         },
         "SECRET_KEY": {
-          "defaultValue": "${{secret(32)}}",
+          "defaultValue": "${{secret(43)}}",
           "description": "Auto-generated - signs dashboard sessions",
           "isOptional": false
         },
