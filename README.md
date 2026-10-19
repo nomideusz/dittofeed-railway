@@ -22,7 +22,7 @@ This template runs Dittofeed's **lite** bundle — API, dashboard, and worker in
 ### Deployment Dependencies
 
 - [Dittofeed documentation](https://docs.dittofeed.com/)
-- [Template source on GitHub](https://github.com/nomideusz/dittofeed-railway)
+- [Template source on GitHub](https://github.com/two-workspaces/dittofeed)
 
 ### Implementation Details
 

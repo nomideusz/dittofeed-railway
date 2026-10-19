@@ -15,7 +15,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "repo": "https://github.com/two-workspaces/dittofeed",
         "rootDirectory": "/lite"
       },
       "variables": {
@@ -205,7 +205,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "repo": "https://github.com/two-workspaces/dittofeed",
         "rootDirectory": "/clickhouse"
       },
       "variables": {
@@ -247,7 +247,7 @@
         "restartPolicyMaxRetries": 10
       },
       "source": {
-        "repo": "https://github.com/nomideusz/dittofeed-railway",
+        "repo": "https://github.com/two-workspaces/dittofeed",
         "rootDirectory": "/temporal"
       },
       "variables": {
